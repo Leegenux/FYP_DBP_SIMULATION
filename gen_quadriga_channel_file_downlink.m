@@ -1,4 +1,4 @@
-function [H_ue_aggregation_central, H_ue_aggregation_decentral, H_ue, H_in] = gen_quadriga_channel_file_downlink(par, nbr_of_RB, nbr_of_ue, nbr_of_in, cluster_num, fname, new_generate) % check if result same
+function [H_ue, H_in] = gen_quadriga_channel_file_downlink(par, nbr_of_RB, nbr_of_ue, nbr_of_in, cluster_num, fname, new_generate) % check if result same
     % Example:
     %       [H_ue, H_in, lay] = gen_quadriga_channel_file(4, 8, 8, 1);
 
@@ -21,8 +21,6 @@ function [H_ue_aggregation_central, H_ue_aggregation_decentral, H_ue, H_in] = ge
         res = load(full_path);
         H_ue = res.res.H_ue;
         H_in = res.res.H_in;
-        H_ue_aggregation_central = res.res.H_ue_aggregation_central;
-        H_ue_aggregation_decentral = res.res.H_ue_aggregation_decentral;
     else
 
         % fixed parameters
@@ -136,101 +134,10 @@ function [H_ue_aggregation_central, H_ue_aggregation_decentral, H_ue, H_in] = ge
         H_ue = H_permuted(:, :, :, 1:nbr_of_ue);
         H_in = H_permuted(:, :, :, nbr_of_ue + 1:layout.no_rx); % no using in downlink
 
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CENTRALIZED CHANNEL AGGREGATION
-        H_ue_aggregation = zeros(nbr_tx_ant, nbr_ue_pol, nbr_of_ue);
-
-        for ue = 1:nbr_of_ue
-            %                 end
-            for pol = 1:nbr_ue_pol
-                % waveforms are aggregated subcarrier-wise, and normalization;
-                if par.aggregate_svd % aggregation using SVD
-                    [~, v, d] = svd(squeeze(H(:, ue, :, pol))');
-                    h = d(:, 1);
-
-                    if par.agg_norm_sv % different kind of normalization method
-                        H_ue_aggregation(:, pol, ue) = h * sqrt(v(1, 1));
-                    else
-                        H_ue_aggregation(:, pol, ue) = h / norm(h, 'fro') * sqrt(sumf2(squeeze(H(:, ue, :, pol))) / subc_num);
-                    end
-
-                else
-                    h = channel_aggregation(squeeze(H(:, ue, :, pol)));
-                    H_ue_aggregation(:, pol, ue) = h / norm(h, 'fro') * sqrt(sumf2(squeeze(H(:, ue, :, pol))) / subc_num);
-                end
-
-            end
-
-        end
-
-        % H_ue_aggregation_central dimension: #ue_antenna, #tx_antenna, #ue
-        H_ue_aggregation_central = permute(H_ue_aggregation, [2, 1, 3]);
-
-        %%%%% DECENTRIALIZED DOWNLINK CHANNEL
-        switch (cluster_num)
-            case 1
-                part_scheme = [1, 1, 1]; % used for verfify the code is correct
-            case 2
-                part_scheme = [1, 1, 2];
-            case 4
-                part_scheme = [1, 2, 2];
-            case 8
-                part_scheme = [1, 2, 4];
-        end
-
-        decentral_idx = cell(cluster_num, 1);
-        map_down = reshape(1:nbr_tx_ant, nbr_bs_pol, nbr_vertical, nbr_horizon);
-
-        for hori_part = 1:part_scheme(3)
-
-            for vert_part = 1:part_scheme(2)
-                hori_idx = hori_part -1;
-                vert_idx = vert_part - 1;
-
-                hori_range = hori_idx * (nbr_horizon / part_scheme(3)) + 1:(hori_idx + 1) * (nbr_horizon / part_scheme(3));
-                vert_range = vert_idx * (nbr_vertical / part_scheme(2)) + 1:(vert_idx + 1) * (nbr_vertical / part_scheme(2));
-
-                decentral_idx{vert_idx * part_scheme(3) + hori_part} = reshape(map_down(:, vert_range, hori_range), nbr_tx_ant / cluster_num, 1);
-            end
-
-        end
-
-        H_ue_aggregation1 = zeros(nbr_tx_ant, nbr_ue_pol, nbr_of_ue);
-
-        for c = 1:cluster_num
-
-            for ue = 1:nbr_of_ue
-
-                for pol = 1:nbr_ue_pol
-                    % waveforms are aggregated subcarrier-wise, and normalization;
-                    if par.aggregate_svd
-                        [~, v, d] = svd(squeeze(H(decentral_idx{c}, ue, :, pol))');
-                        h = d(:, 1);
-
-                        if par.agg_norm_sv
-                            H_ue_aggregation1(decentral_idx{c}, pol, ue) = h * v(1, 1);
-                        else
-                            H_ue_aggregation1(decentral_idx{c}, pol, ue) = h / norm(h, 'fro') * sqrt(sumf2(squeeze(H(decentral_idx{c}, ue, :, pol))) / subc_num);
-                        end
-
-                    else
-                        h = channel_aggregation(squeeze(H(decentral_idx{c}, ue, :, pol)));
-                        H_ue_aggregation1(decentral_idx{c}, pol, ue) = h / norm(h, 'fro') * sqrt(sumf2(squeeze(H(decentral_idx{c}, ue, :, pol))) / subc_num);
-                    end
-
-                end
-
-            end
-
-        end
-
-        H_ue_aggregation_decentral = permute(H_ue_aggregation1, [2, 1, 3]);
-
         if do_save
             mkdir(dir_name);
             res.H_ue = H_ue;
             res.H_in = H_in;
-            res.H_ue_aggregation_central = H_ue_aggregation_central;
-            res.H_ue_aggregation_decentral = H_ue_aggregation_decentral;
             save(full_path, 'res');
         end
 

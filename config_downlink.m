@@ -27,9 +27,6 @@ function par = config_downlink()
     %%%% settings about channel files
     par.new_generate = false; % Whether use new quadriga channel or use already generated quadriga channel
     par.quadriga = true; % whether use quadriga (true) or reyleigh channel (false)
-    par.use_aggregation = true; % whether apply aggregation accross channels of different sub-band
-    par.aggregate_svd = false; % whether use svd directly to aggregate the channel (true) or use PASTd (false)
-    par.agg_norm_sv = false; % whether use singular value (true) or subcarrier amplifide (false) to normalize the aggregate channel
 
     %%%% set default simulation parameters
     par.runID = 9; % simulation ID (used to reproduce results)
@@ -46,7 +43,6 @@ function par = config_downlink()
     %   decentralized : 'DEZF'
     par.precoder = {'ZF', 'DZF', 'WMMSE'};
     %     par.precoder = {'dZF', 'dEZF', 'dWMMSE'};
-    %     par.precoder = { 'dZF','dEZF', 'dWMMSE'}; % 'DEZF', 'EZF', 'WMMSE', 'ZF', 'dWMMSE'
     par.plot = 'on'; % plot results? 'on' or 'off'
     par.save = 'on'; % save results? 'on' or 'off'
 
@@ -63,5 +59,4 @@ function par = config_downlink()
     % GPU acceleration. fall back to CPU when not available
     % not working yet
     par.GPUAccel = false;
-
 end

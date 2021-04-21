@@ -11,7 +11,7 @@ function [plot_param] = plot_result_achievable_rate(par, res, plot_param)
         marker_ind = plot_param.next_marker + d - 1;
         marker_ind = mod(marker_ind - 1, length(marker_style)) + 1;
 
-        if d + plot_param.next_marker - 1 == 1% set up the attributes and things
+        if d + plot_param.next_marker - 1 == 1 % set up the attributes and things
             hold off
             % set figure attributes
             plot(par.SNRdB_list, res.achievable_rate(d, :), marker_style{marker_ind}, 'LineWidth', 2, 'MarkerSize', 13)
@@ -19,7 +19,7 @@ function [plot_param] = plot_result_achievable_rate(par, res, plot_param)
             grid on % enable grid
             xlabel('Average Transmit SNR (dB)', 'FontSize', 12)
             ylabel('Achievable Rate (bpcu) ', 'FontSize', 12)
-            axis([min(par.SNRdB_list) max(par.SNRdB_list) 0 400])
+            axis([min(par.SNRdB_list) max(par.SNRdB_list) 0 720])
             title(plot_param.title);
         else
             hold on
@@ -37,7 +37,7 @@ function [plot_param] = plot_result_achievable_rate(par, res, plot_param)
 
         for i = 1:res.maxiter
             l{i} = [res.algname ' Iteration ' num2str(i)];
-            l{i} = [res.algname ];
+            l{i} = [res.algname];
         end
 
         plot_param.legends = cat(2, plot_param.legends, l);

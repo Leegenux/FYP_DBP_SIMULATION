@@ -12,7 +12,7 @@ function [par, res_list] = DBP_precoder_sim(varargin)
     %%%%% SIMULATION INITIALIZATION
     par = simulation_init_downlink(par);
     achievable_rate_plot_data = plot_data_init_downlink(1);
-    achievable_rate_plot_data.title = ['Achievable Rate, ', num2str(par.B) ' antennas, ' num2str(par.C) ' clusters, ' num2str(par.U) ' users'];
+    achievable_rate_plot_data.title = [num2str(par.B) ' antennas, ' num2str(par.C) ' clusters, ' num2str(par.U) ' users'];
 
     % dimensions: #bs_antenna, #UE, #sub_c
     res_list = cell(length(par.precoder), 1);
@@ -27,13 +27,9 @@ function [par, res_list] = DBP_precoder_sim(varargin)
         if par.quadriga
             ch_fname = ['runID_' num2str(par.runID) '_ue_' num2str(par.nbr_of_ue) '_CH_trial_' num2str(trial) '.mat'];
             % generate channel for 4RB
-            [H_ue_aggregation_central, H_ue_aggregation_decentral, H_ue, ~, ] = gen_quadriga_channel_file_downlink(par, par.nbr_of_RB, par.nbr_of_ue, par.nbr_of_in, par.C, ch_fname, par.new_generate);
-            % layout.visualize;
+            [H_ue, ~] = gen_quadriga_channel_file_downlink(par, par.nbr_of_RB, par.nbr_of_ue, par.nbr_of_in, par.C, ch_fname, par.new_generate);
         else
             H_ue = sqrt(0.5) * (randn(par.nbr_ue_pol, par.B, par.nbr_of_subc, par.nbr_of_ue) + 1j * randn(par.nbr_ue_pol, par.B, par.nbr_of_subc, par.nbr_of_ue));
-            H_ue_aggregation_central = nan;
-            H_ue_aggregation_decentral = nan;
-            %         H_in = sqrt(0.5) * (randn(par.nbr_ue_pol, par.B, par.nbr_of_ue) + 1j * randn(par.nbr_ue_pol, par.B, par.nbr_of_ue));
         end
 
         P_max_list = zeros(length(par.SNRdB_list), 1);
@@ -52,13 +48,7 @@ function [par, res_list] = DBP_precoder_sim(varargin)
             method_res = res_init_downlink(par.SNRdB_list, cur_method, par.maxiter_limit);
             [method, ~, ~] = name_to_method_downlink(cur_method);
 
-            if method_res.distr == true
-                H_ue_aggregation = H_ue_aggregation_decentral;
-            else
-                H_ue_aggregation = H_ue_aggregation_central;
-            end
-
-            method_res = simulation_loops_downlink(par, method_res, P_max_list, H_ue, H_ue_aggregation, method);
+            method_res = simulation_loops_downlink(par, method_res, P_max_list, H_ue, method);
             method_res.achievable_rate = res_list{method_idx}.achievable_rate + method_res.achievable_rate;
 
             % gather results
