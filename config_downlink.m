@@ -4,7 +4,7 @@ function par = config_downlink()
 
     %%%% QuaDRiGa related
     par.nbr_of_RB = 4; % Number of RB
-    par.nbr_of_ue = 32; % Number of UE
+    par.nbr_of_ue = 8; % Number of UE
     par.nbr_of_in = 8; % Number of interference user
     par.nbr_of_sym = 14; % Number of symbol in a slot
     par.nbr_of_RE = par.nbr_of_RB * par.nbr_of_sym * par.rb_subc; % Number of RE in 4RB
@@ -49,7 +49,6 @@ function par = config_downlink()
     %%%% parameters for DBP
     par.C = 8; % number of clusters
     par.maxiter_limit = 1; % maximum algorithm iterations (for BCDMMSE)
-    par.IoT = 10; % unit: dB
     par.Es = nan; % average power of UE symbols
     par.Ei = nan; % average power of IN symbols
     par.Q = nan; % number of bits in each symbol
