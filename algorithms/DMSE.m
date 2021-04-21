@@ -1,5 +1,5 @@
 %% unbiased distributed approximate MMSE detector (DMSE)
-function [W] = DMSE(par, ~, H, Ruu)
+function [W] = DMSE(par, ~, H, Ruu, ~)
     % number of antennas in each group
     Bc = par.B / par.C;
 

@@ -15,7 +15,7 @@ function [method, distr, iterative, ZF_est] = name_to_method(name)
         case 'BDAC-MMSE'
             method = @QQMMSE;
             distr = true;
-        case 'DMSE'
+        case 'DMMSE'
             method = @DMSE;
             distr = true;
         case 'BCD-MMSE'

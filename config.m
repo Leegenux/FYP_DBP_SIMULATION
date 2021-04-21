@@ -53,6 +53,6 @@ function par = config()
     par.simName = nan;
 
     %%%% parameters for plot
-    par.title = false;
-    par.plot_shape = true;
+    par.title = true;
+    par.plot_shape = false;
 end
