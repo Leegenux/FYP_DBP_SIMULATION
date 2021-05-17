@@ -44,7 +44,7 @@ function par = config()
     par.save = 'on'; % save results? 'on' or 'off'
 
     %%%% parameters for DBP
-    par.C = 2; % number of clusters, available values are (2, 4, 8, 16)
+    par.C = 8; % number of clusters, available values are (2, 4, 8, 16)
     par.maxiter_limit = 1; % maximum algorithm iterations (for BCDMMSE)
     par.IoT = 10; % unit: dB
     par.Es = nan; % average power of UE symbols
