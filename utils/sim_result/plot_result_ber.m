@@ -14,6 +14,7 @@ function [plot_param] = plot_result_ber(par, res, plot_param)
 
     % add lines
     figure(plot_param.figure_num)
+    tag_str = cell(0);
 
     for d = 1:res.maxiter
         marker_ind = plot_param.next_marker + d - 1;
@@ -39,21 +40,36 @@ function [plot_param] = plot_result_ber(par, res, plot_param)
             hold off
         end
 
+        [tx, ty] = linear_intersections(par.SNRdB_list, log(res.BER(d, :)) / log(10), log(par.target_BER) / log(10), 'y');
+
+        if ~isempty(ty) && par.do_tag
+
+            % for idx = 1:length(ty)
+            %     x_val = tx(idx);
+            %     y_val = power(10, ty(idx));
+            %     text(x_val, y_val, '\otimes', 'FontSize', marker_size + 10, 'Color', 'k', 'HorizontalAlignment', 'center');
+            % end
+
+            tag_str{d} = ['  (' num2str(tx(1), '%2.4f dB)')];
+        else
+            tag_str{d} = '';
+        end
+
     end
 
     plot_param.next_marker = plot_param.next_marker + res.maxiter;
 
-    % gether legeneds
+    % gather legeneds
     if res.iterative
         l = cell(1, res.maxiter);
 
         for i = 1:res.maxiter
-            l{i} = [res.algname ':Iter ' num2str(i)];
+            l{i} = [ res.algname ':Iter ' num2str(i) tag_str{i}];
         end
 
         plot_param.legends = cat(2, plot_param.legends, l);
     else
-        plot_param.legends{end + 1} = [res.algname];
+        plot_param.legends{end + 1} = [ res.algname tag_str{1}];
     end
 
     % set up legends and gca
