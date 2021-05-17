@@ -4,7 +4,7 @@ function par = config_downlink()
 
     %%%% QuaDRiGa related
     par.nbr_of_RB = 4; % Number of RB
-    par.nbr_of_ue = 8; % Number of UE
+    par.nbr_of_ue = 4; % Number of UE
     par.nbr_of_in = 8; % Number of interference user
     par.nbr_of_sym = 14; % Number of symbol in a slot
     par.nbr_of_RE = par.nbr_of_RB * par.nbr_of_sym * par.rb_subc; % Number of RE in 4RB
@@ -30,10 +30,10 @@ function par = config_downlink()
 
     %%%% set default simulation parameters
     par.runID = 9; % simulation ID (used to reproduce results)
-    par.B = 128; % receive antennas always 128
+    par.B = 128; % receive antennas (128 or 256 supported)
     par.U = par.nbr_of_ue; % transmit antennas (not larger than MR!)
-    par.D_k = 4; % data streams of per user
-    par.D = par.D_k * par.nbr_of_ue; % data streams of per user
+    par.D_k = 4; % number of data streams per user (ALWAYS 4, CANNOT CHANGE)
+    par.D = par.D_k * par.nbr_of_ue; % total data streams
     par.mod = '16QAM'; % modulation type: 'BPSK', 'QPSK', '16QAM', '64QAM'
     par.RB_trials = 1; % number of Monte-Carlo trials (RB under same channel)
     par.SNRdB_list = -20:2:30; % list of SNR [dB] values to be simulated
